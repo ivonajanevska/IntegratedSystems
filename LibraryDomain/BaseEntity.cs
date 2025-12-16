@@ -1,4 +1,4 @@
-﻿namespace LibraryWeb.Models
+﻿namespace LibraryDomain
 {
     public class BaseEntity
     {

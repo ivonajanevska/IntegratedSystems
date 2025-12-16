@@ -1,5 +1,5 @@
 using LibraryWeb.Data;
-using LibraryWeb.Models.Identity;
+using LibraryDomain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 

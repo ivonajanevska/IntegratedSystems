@@ -4,6 +4,7 @@ using LibraryWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryWeb.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251211132122_AddImageProperty")]
+    partial class AddImageProperty
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -45,27 +48,6 @@ namespace LibraryWeb.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("LibraryDomain.Domain.ShoppingCart", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId")
-                        .IsUnique()
-                        .HasFilter("[OwnerId] IS NOT NULL");
-
-                    b.ToTable("ShoppingCarts");
                 });
 
             modelBuilder.Entity("LibraryDomain.Identity.LibraryUser", b =>
@@ -139,24 +121,6 @@ namespace LibraryWeb.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("LibraryDomain.Relationships.BooksInShoppingCart", b =>
-                {
-                    b.Property<Guid>("BookId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("ShoppingCartId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("BookId", "ShoppingCartId");
-
-                    b.HasIndex("ShoppingCartId");
-
-                    b.ToTable("BooksInShoppingCarts");
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRole", b =>
@@ -296,34 +260,6 @@ namespace LibraryWeb.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("LibraryDomain.Domain.ShoppingCart", b =>
-                {
-                    b.HasOne("LibraryDomain.Identity.LibraryUser", "LibraryUser")
-                        .WithOne("UserShoppingCart")
-                        .HasForeignKey("LibraryDomain.Domain.ShoppingCart", "OwnerId");
-
-                    b.Navigation("LibraryUser");
-                });
-
-            modelBuilder.Entity("LibraryDomain.Relationships.BooksInShoppingCart", b =>
-                {
-                    b.HasOne("LibraryDomain.Domain.Book", "Book")
-                        .WithMany("BooksInShoppingCart")
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LibraryDomain.Domain.ShoppingCart", "ShoppingCart")
-                        .WithMany("BooksInShoppingCart")
-                        .HasForeignKey("ShoppingCartId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("ShoppingCart");
-                });
-
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<string>", b =>
                 {
                     b.HasOne("Microsoft.AspNetCore.Identity.IdentityRole", null)
@@ -373,21 +309,6 @@ namespace LibraryWeb.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("LibraryDomain.Domain.Book", b =>
-                {
-                    b.Navigation("BooksInShoppingCart");
-                });
-
-            modelBuilder.Entity("LibraryDomain.Domain.ShoppingCart", b =>
-                {
-                    b.Navigation("BooksInShoppingCart");
-                });
-
-            modelBuilder.Entity("LibraryDomain.Identity.LibraryUser", b =>
-                {
-                    b.Navigation("UserShoppingCart");
                 });
 #pragma warning restore 612, 618
         }

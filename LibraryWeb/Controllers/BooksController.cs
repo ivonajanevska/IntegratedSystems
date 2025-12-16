@@ -6,7 +6,8 @@ using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using LibraryWeb.Data;
-using LibraryWeb.Models.Domain;
+using LibraryDomain;
+using LibraryDomain.Domain;
 
 namespace LibraryWeb.Controllers
 {
@@ -54,7 +55,7 @@ namespace LibraryWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Author,Id,CreatedOn")] Book book)
+        public async Task<IActionResult> Create([Bind("Title,Author,Id,CreatedOn, Image")] Book book)
         {
             if (ModelState.IsValid)
             {
@@ -87,7 +88,7 @@ namespace LibraryWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Author,Id,CreatedOn")] Book book)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Author,Id,CreatedOn, Image")] Book book)
         {
             if (id != book.Id)
             {
