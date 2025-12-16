@@ -1,5 +1,6 @@
-﻿using LibraryWeb.Models.Domain;
-using LibraryWeb.Models.Identity;
+﻿using LibraryDomain.Domain;
+using LibraryDomain.Identity;
+using LibraryDomain.Relationships;
 using Microsoft.AspNetCore.Identity.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore;
 
@@ -13,7 +14,8 @@ namespace LibraryWeb.Data
         }
 
         public virtual DbSet<Book> Books { get; set; }
-
+        public virtual DbSet<ShoppingCart> ShoppingCarts { get; set; }
+        public virtual DbSet<BooksInShoppingCart> BooksInShoppingCarts { get; set; }
         protected override void OnModelCreating(ModelBuilder modelBuilder)
         {
             base.OnModelCreating(modelBuilder);
@@ -23,7 +25,29 @@ namespace LibraryWeb.Data
                 book.HasKey(b => b.Id);
 
             });
-            
+
+            modelBuilder.Entity<ShoppingCart>(cart =>
+            {
+                cart.HasKey(c => c.Id);
+
+                cart.HasOne(c => c.LibraryUser)
+                .WithOne(u => u.UserShoppingCart)
+                .HasForeignKey<ShoppingCart>(c => c.OwnerId);
+            });
+
+            modelBuilder.Entity<BooksInShoppingCart>(booksInCart =>
+            {
+                booksInCart.HasKey(b => new { b.BookId, b.ShoppingCartId });
+
+                booksInCart.HasOne(b => b.Book)
+                           .WithMany(b => b.BooksInShoppingCart)
+                           .HasForeignKey(b =>b.BookId);
+
+                booksInCart.HasOne(b => b.ShoppingCart)
+                .WithMany(s => s.BooksInShoppingCart)
+                .HasForeignKey(b => b.ShoppingCartId);
+
+            });
         }
     }
 }
