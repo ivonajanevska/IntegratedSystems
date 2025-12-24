@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace LibraryDomain.Relationships
 {
-    public class BooksInShoppingCart
+    public class BooksInShoppingCart : BaseEntity
     {
         public Guid BookId { get; set; }
         public virtual Book? Book { get; set; }

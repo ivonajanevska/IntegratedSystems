@@ -2,6 +2,11 @@ using LibraryWeb.Data;
 using LibraryDomain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using LibraryRepository.Interface;
+using LibraryService.Interfaces;
+using LibraryService.Implementations;
+using NuGet.Protocol.Core.Types;
+using LibraryRepository.Implementation;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -10,6 +15,11 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
+
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddTransient<IBookService, BookService>();
+builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
+
 
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
