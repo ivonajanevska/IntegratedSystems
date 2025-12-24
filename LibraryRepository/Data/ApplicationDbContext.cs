@@ -37,7 +37,7 @@ namespace LibraryWeb.Data
 
             modelBuilder.Entity<BooksInShoppingCart>(booksInCart =>
             {
-                booksInCart.HasKey(b => new { b.BookId, b.ShoppingCartId });
+                booksInCart.HasKey(b => b.Id);
 
                 booksInCart.HasOne(b => b.Book)
                            .WithMany(b => b.BooksInShoppingCart)

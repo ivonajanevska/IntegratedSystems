@@ -14,15 +14,20 @@
     <div class="row row-cols-3 justify-content-center">
         @foreach(var book in Model)
         {
-            <div class="col">
+            <div class="col-3">
                 <a class="text-decoration-none text-black" asp-action="Details" asp-route-id="@book.Id">
                     <div class="card" style="width: 18rem;">
                         <img src="@book.Image" class="card-img-top" alt="...">
                         <div class="card-body">
                             <h5 class="card-title">@book.Title</h5>
                             <p class="card-text">@book.Author</p>
-                            <a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-primary">Edit</a>
-                            <a asp-action="Delete" asp-route-id="@book.Id" class="btn btn-danger">Delete</a>
+                            <div class="row mt-2">
+                                <a asp-action="AddBookToCart" asp-controller="Books" asp-route-id="@book.Id" class="btn btn-primary"> Add To Cart</a>
+                            </div>
+                            <div class="row mt-2 justify-content-between">
+                                <a asp-action="Edit" asp-route-id="@book.Id" class="btn btn-primary">Edit</a>
+                                <a asp-action="Delete" asp-route-id="@book.Id" class="btn btn-danger">Delete</a>
+                            </div>
                         </div>
                     </div>
                 </a>
