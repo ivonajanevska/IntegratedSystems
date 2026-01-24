@@ -4,6 +4,7 @@ using LibraryWeb.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
 using Microsoft.EntityFrameworkCore.Metadata;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -11,9 +12,11 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace LibraryWeb.Data.Migrations
 {
     [DbContext(typeof(ApplicationDbContext))]
-    partial class ApplicationDbContextModelSnapshot : ModelSnapshot
+    [Migration("20251224222236_AddPriceOnBook")]
+    partial class AddPriceOnBook
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder
@@ -51,25 +54,6 @@ namespace LibraryWeb.Data.Migrations
                     b.HasKey("Id");
 
                     b.ToTable("Books");
-                });
-
-            modelBuilder.Entity("LibraryDomain.Domain.Order", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<string>("OwnerId")
-                        .HasColumnType("nvarchar(450)");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("OwnerId");
-
-                    b.ToTable("Orders");
                 });
 
             modelBuilder.Entity("LibraryDomain.Domain.ShoppingCart", b =>
@@ -164,33 +148,6 @@ namespace LibraryWeb.Data.Migrations
                         .HasFilter("[NormalizedUserName] IS NOT NULL");
 
                     b.ToTable("AspNetUsers", (string)null);
-                });
-
-            modelBuilder.Entity("LibraryDomain.Relationships.BooksInOrder", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<Guid>("BookId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<DateTime>("CreatedOn")
-                        .HasColumnType("datetime2");
-
-                    b.Property<Guid>("OrderId")
-                        .HasColumnType("uniqueidentifier");
-
-                    b.Property<int>("Quantity")
-                        .HasColumnType("int");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("BookId");
-
-                    b.HasIndex("OrderId");
-
-                    b.ToTable("BooksInOrder");
                 });
 
             modelBuilder.Entity("LibraryDomain.Relationships.BooksInShoppingCart", b =>
@@ -353,15 +310,6 @@ namespace LibraryWeb.Data.Migrations
                     b.ToTable("AspNetUserTokens", (string)null);
                 });
 
-            modelBuilder.Entity("LibraryDomain.Domain.Order", b =>
-                {
-                    b.HasOne("LibraryDomain.Identity.LibraryUser", "LibraryUser")
-                        .WithMany()
-                        .HasForeignKey("OwnerId");
-
-                    b.Navigation("LibraryUser");
-                });
-
             modelBuilder.Entity("LibraryDomain.Domain.ShoppingCart", b =>
                 {
                     b.HasOne("LibraryDomain.Identity.LibraryUser", "LibraryUser")
@@ -369,25 +317,6 @@ namespace LibraryWeb.Data.Migrations
                         .HasForeignKey("LibraryDomain.Domain.ShoppingCart", "OwnerId");
 
                     b.Navigation("LibraryUser");
-                });
-
-            modelBuilder.Entity("LibraryDomain.Relationships.BooksInOrder", b =>
-                {
-                    b.HasOne("LibraryDomain.Domain.Book", "Book")
-                        .WithMany()
-                        .HasForeignKey("BookId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.HasOne("LibraryDomain.Domain.Order", "Order")
-                        .WithMany("BooksInOrder")
-                        .HasForeignKey("OrderId")
-                        .OnDelete(DeleteBehavior.Cascade)
-                        .IsRequired();
-
-                    b.Navigation("Book");
-
-                    b.Navigation("Order");
                 });
 
             modelBuilder.Entity("LibraryDomain.Relationships.BooksInShoppingCart", b =>
@@ -463,11 +392,6 @@ namespace LibraryWeb.Data.Migrations
             modelBuilder.Entity("LibraryDomain.Domain.Book", b =>
                 {
                     b.Navigation("BooksInShoppingCart");
-                });
-
-            modelBuilder.Entity("LibraryDomain.Domain.Order", b =>
-                {
-                    b.Navigation("BooksInOrder");
                 });
 
             modelBuilder.Entity("LibraryDomain.Domain.ShoppingCart", b =>

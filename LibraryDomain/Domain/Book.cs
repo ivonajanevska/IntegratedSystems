@@ -9,6 +9,8 @@ namespace LibraryDomain.Domain
 
         public string? Image { get; set; }
         public string? Test { get; set; }
+        public double Price { get; set; }
         public virtual ICollection<BooksInShoppingCart>? BooksInShoppingCart { get; set; }
+
     }
 }
