@@ -8,22 +8,31 @@ using Microsoft.EntityFrameworkCore;
 using LibraryWeb.Data;
 using LibraryDomain;
 using LibraryDomain.Domain;
+using System.Security.Claims;
+using Humanizer;
+using LibraryDomain.DTOs;
+using LibraryDomain.Relationships;
+using LibraryService.Interfaces;
 
 namespace LibraryWeb.Controllers
 {
     public class BooksController : Controller
     {
-        private readonly ApplicationDbContext _context;
+        private readonly IBookService bookService;
+        private readonly IShoppingCartService shoppingCartService;
 
-        public BooksController(ApplicationDbContext context)
+        public BooksController(IBookService bookService, IShoppingCartService shoppingCartService)
         {
-            _context = context;
+            this.bookService = bookService;
+            this.shoppingCartService = shoppingCartService;
         }
+
+
 
         // GET: Books
         public async Task<IActionResult> Index()
         {
-            return View(await _context.Books.ToListAsync());
+            return View(bookService.GetAll());
         }
 
         // GET: Books/Details/5
@@ -34,8 +43,8 @@ namespace LibraryWeb.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var book = bookService.GetById(id.Value);
+
             if (book == null)
             {
                 return NotFound();
@@ -55,13 +64,12 @@ namespace LibraryWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Create([Bind("Title,Author,Id,CreatedOn, Image")] Book book)
+        public async Task<IActionResult> Create([Bind("Title,Author,Id,CreatedOn, Image, Price")] Book book)
         {
             if (ModelState.IsValid)
             {
                 book.Id = Guid.NewGuid();
-                _context.Add(book);
-                await _context.SaveChangesAsync();
+                bookService.Create(book);
                 return RedirectToAction(nameof(Index));
             }
             return View(book);
@@ -75,7 +83,7 @@ namespace LibraryWeb.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books.FindAsync(id);
+            var book = bookService.GetById(id.Value);
             if (book == null)
             {
                 return NotFound();
@@ -88,7 +96,7 @@ namespace LibraryWeb.Controllers
         // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
-        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Author,Id,CreatedOn, Image")] Book book)
+        public async Task<IActionResult> Edit(Guid id, [Bind("Title,Author,Id,CreatedOn, Price, Image")] Book book)
         {
             if (id != book.Id)
             {
@@ -99,8 +107,7 @@ namespace LibraryWeb.Controllers
             {
                 try
                 {
-                    _context.Update(book);
-                    await _context.SaveChangesAsync();
+                    bookService.Update(book);
                 }
                 catch (DbUpdateConcurrencyException)
                 {
@@ -126,8 +133,8 @@ namespace LibraryWeb.Controllers
                 return NotFound();
             }
 
-            var book = await _context.Books
-                .FirstOrDefaultAsync(m => m.Id == id);
+            var book = bookService.GetById(id.Value);
+
             if (book == null)
             {
                 return NotFound();
@@ -141,19 +148,56 @@ namespace LibraryWeb.Controllers
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(Guid id)
         {
-            var book = await _context.Books.FindAsync(id);
-            if (book != null)
-            {
-                _context.Books.Remove(book);
-            }
+            bookService.Delete(id);
+            return RedirectToAction(nameof(Index));
+        }
 
-            await _context.SaveChangesAsync();
+        //private bool BookExists(Guid id)
+        //{
+        //    return _context.Books.Any(e => e.Id == id);
+        //}
+
+        [HttpGet]
+        public async Task<IActionResult> AddBookToCart(Guid? id)
+        {
+            var book = bookService.GetById(id.Value);
+            if (book == null) return RedirectToAction(nameof(Index));
+
+            return View(book);
+        }
+
+        // Post: Books/AddBookToCart/5
+        [HttpPost]
+        [ValidateAntiForgeryToken]
+        public async Task<IActionResult> AddBookToCart(AddBookToCartDto dto)
+        {
+            if (dto == null) return RedirectToAction(nameof(Index));
+
+            var book = bookService.GetById(dto.BookId);
+            if (book == null) return RedirectToAction(nameof(Index));
+
+            var userId = User.FindFirstValue(ClaimTypes.NameIdentifier);
+            if (userId == null) return RedirectToAction(nameof(Index));
+
+            var userCart = shoppingCartService.GetByOwner(userId);
+            if (userCart == null) return RedirectToAction(nameof(Index));
+
+            bookService.AddBookToCart(new BooksInShoppingCart
+            {
+                 Book = book,
+                 BookId = book.Id,
+                 ShoppingCart = userCart,
+                 ShoppingCartId = userCart.Id,
+                 Quantity = dto.Quantity
+
+            });
+
             return RedirectToAction(nameof(Index));
         }
 
         private bool BookExists(Guid id)
         {
-            return _context.Books.Any(e => e.Id == id);
+            return bookService.GetById(id) != null;
         }
     }
 }

@@ -23,6 +23,12 @@
 
   <ItemGroup>
     <ProjectReference Include="..\LibraryDomain\LibraryDomain.csproj" />
+    <ProjectReference Include="..\LibraryRepository\LibraryRepository.csproj" />
+    <ProjectReference Include="..\LibraryService\LibraryService.csproj" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Folder Include="Pages\" />
   </ItemGroup>
 
 </Project>
