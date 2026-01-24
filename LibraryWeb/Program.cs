@@ -2,6 +2,12 @@ using LibraryWeb.Data;
 using LibraryDomain.Identity;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
+using LibraryRepository.Interface;
+using LibraryService.Interfaces;
+using LibraryService.Implementations;
+using NuGet.Protocol.Core.Types;
+using LibraryRepository.Implementation;
+using LibraryDomain.Email;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +17,12 @@ var connectionString = builder.Configuration.GetConnectionString("DefaultConnect
 builder.Services.AddDbContext<ApplicationDbContext>(options =>
     options.UseSqlServer(connectionString));
 
+builder.Services.AddScoped(typeof(IRepository<>), typeof(Repository<>));
+builder.Services.AddScoped(typeof(IUserRepository), typeof(UserRepository));
+builder.Services.AddTransient<IBookService, BookService>();
+builder.Services.AddTransient<IShoppingCartService, ShoppingCartService>();
+builder.Services.Configure<EmailSettings>(builder.Configuration.GetSection("EmailSettings"));
+builder.Services.AddTransient<IEmailService, EmailService>();
 builder.Services.AddDatabaseDeveloperPageExceptionFilter();
 
 builder.Services.AddDefaultIdentity<LibraryUser>(options => options.SignIn.RequireConfirmedAccount = true)
